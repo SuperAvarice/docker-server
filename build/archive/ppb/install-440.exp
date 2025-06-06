@@ -1,0 +1,35 @@
+#!/usr/bin/expect -f
+
+set timeout 10
+spawn ./ppb-linux-x86_64.sh
+expect "Unpacking JRE ...\r"
+expect "Starting Installer ...\r"
+expect "OK \[o, Enter\], Cancel \[c\]\r"
+send -- "o\r"
+expect "\[Enter\]\r"
+send -- "\r"
+expect "\[Enter\]\r"
+send -- "\r"
+expect "\[Enter\]\r"
+send -- "\r"
+expect "\[Enter\]\r"
+send -- "\r"
+expect "\[Enter\]\r"
+send -- "\r"
+expect "\[Enter\]\r"
+send -- "\r"
+expect "\[Enter\]\r"
+send -- "\r"
+expect "\[Enter\]\r"
+send -- "\r"
+expect "I accept the agreement\rYes \[1\], No \[2\]\r"
+send -- "1\r"
+expect "Where should CyberPower PowerPanel Business be installed?\r\[/usr/local/PPB\]\r"
+send -- "/usr/local/ppbe\r"
+expect "Which components should be installed?\r
+1: Local\r
+2: Remote\r
+Please enter a comma-separated list of the selected values or \[Enter\] for the default selection:\r"
+send -- "1\r"
+expect eof
+

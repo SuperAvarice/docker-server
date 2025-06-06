@@ -1,0 +1,22 @@
+
+services:
+
+  postgres:
+    image: postgres:16-alpine
+    restart: always
+    env_file: .env
+    volumes:
+      - ${DATA_DIR}/db:/var/lib/postgresql/data
+
+  linkwarden:
+    image: ghcr.io/linkwarden/linkwarden:latest
+    restart: always
+    depends_on:
+      - postgres
+    env_file: .env
+    environment:
+      - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/postgres
+    ports:
+      - 3001:3000
+    volumes:
+      - ${DATA_DIR}/data:/data/data

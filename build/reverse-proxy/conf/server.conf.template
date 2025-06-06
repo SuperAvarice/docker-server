@@ -1,0 +1,114 @@
+server_tokens off;
+ssl_certificate /etc/letsencrypt/live/my-host.com/fullchain.pem;
+ssl_certificate_key /etc/letsencrypt/live/my-host.com/privkey.pem;
+include /etc/letsencrypt/options-ssl-nginx.conf;
+
+upstream my-host {
+    server 172.16.0.100:8081;
+}
+upstream firefox {
+    server 172.16.0.100:5801;
+}
+
+# Deny anything that is not a valid configured host
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    server_name _;
+
+    return 403;
+}
+
+# Health check (test.my-host.com)
+server {
+    listen 80;
+    listen [::]:80;
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    server_name test.my-host.com;
+
+    location / {
+        add_header Content-Type text/plain;
+        return 200 'OK!';
+    }
+}
+
+# Redirect to SSL (my-host.com *.my-host.com)
+server {
+    listen 80;
+    listen [::]:80;
+    server_name my-host.com *.my-host.com;
+
+    location / { return 301 https://$host$request_uri; }
+}
+
+# The legacy server (my-host.com www.my-host.com)
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    server_name my-host.com www.my-host.com
+
+    location / {
+        proxy_pass http://my-host/;
+        include /etc/nginx/conf.d/proxy-params.inc;
+    }
+}
+
+# firefox.my-host.com
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    server_name firefox.my-host.com;
+    auth_basic "firefox";
+    auth_basic_user_file "/var/security/htpasswd";
+
+    location / {
+        proxy_pass http://firefox;
+        include /etc/nginx/conf.d/proxy-params.inc;
+	}
+	location /websockify {
+		proxy_pass http://firefox;
+        include /etc/nginx/conf.d/proxy-websockify.inc;
+	}
+}
+
+
+# Internal servers ##########################################################
+#############################################################################
+
+upstream portainer {
+    server 172.16.0.1:9000;
+}
+upstream solitaire {
+    server 172.16.0.1:5802;
+}
+
+# portainer.my-host.com
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    server_name portainer.my-host.com;
+
+    location / {
+        proxy_pass http://portainer;
+        include /etc/nginx/conf.d/proxy-params.inc;
+    }
+}
+
+# solitaire.my-host.com
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    server_name solitaire.my-host.com;
+
+    location / {
+        proxy_pass http://solitaire;
+        include /etc/nginx/conf.d/proxy-params.inc;
+    }
+    location /websockify {
+		proxy_pass http://solitaire;
+		include /etc/nginx/conf.d/proxy-websockify.inc;
+	}
+}

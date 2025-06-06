@@ -1,0 +1,18 @@
+# This Dockerfile is used to build a novnc image based on Ubuntu
+
+FROM ubuntu:latest
+
+ENV NO_VNC_HOME=/usr/share/novnc \
+    DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -yq \
+	net-tools novnc websockify && \
+	apt-get autoremove -yq && \
+	apt-get clean -yq && \
+	rm -rf /var/lib/apt/lists/*
+
+RUN ln -s $NO_VNC_HOME/vnc_auto.html $NO_VNC_HOME/index.html
+
+EXPOSE 6000
+
+ENTRYPOINT [ "bash", "/usr/share/novnc/utils/launch.sh" ]

@@ -1,0 +1,30 @@
+services:
+    novnc:
+        container_name: no-vnc
+        hostname: novnc
+        image: jcom/no-vnc
+        build:
+            context: .
+            dockerfile: Dockerfile.novnc
+        command: --vnc headless:5901 --listen 6000
+        restart: unless-stopped
+        ports:
+            - 6902:6000
+
+    headless:
+        container_name: headless-vnc-compose
+        hostname: headless
+        image: jcom/headless-vnc-compose
+        build:
+            context: .
+            dockerfile: Dockerfile.headless
+            shm_size: "2gb"
+        depends_on:
+            - novnc
+        environment:
+            - VNC_RESOLUTION=1900x960
+        restart: unless-stopped
+        init: true
+        command: --wait
+        expose:
+            - 5901

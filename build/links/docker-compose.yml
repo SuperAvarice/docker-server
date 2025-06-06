@@ -1,0 +1,10 @@
+services:
+
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    volumes:
+      - ${DATA_DIR}/conf:/etc/nginx/conf.d
+      - ${DATA_DIR}/www:/var/www
+    ports:
+      - "${PORT}:80"
