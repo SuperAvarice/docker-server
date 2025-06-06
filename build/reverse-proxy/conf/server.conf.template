@@ -4,10 +4,10 @@ ssl_certificate_key /etc/letsencrypt/live/my-host.com/privkey.pem;
 include /etc/letsencrypt/options-ssl-nginx.conf;
 
 upstream my-host {
-    server 172.16.0.100:8081;
+    server 172.16.0.1:8081;
 }
 upstream firefox {
-    server 172.16.0.100:5801;
+    server 172.16.0.1:5801;
 }
 
 # Deny anything that is not a valid configured host

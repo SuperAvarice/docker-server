@@ -1,5 +1,5 @@
 $IMAGE="jcom/no-vnc"
-$VNC_HOST="172.16.0.172:5900"
+$VNC_HOST="172.16.0.1:5900"
 $NO_VNC_PORT="6001"
 $BUILD_DIR="G:\My Drive\Workspace\headless-vnc"
 
