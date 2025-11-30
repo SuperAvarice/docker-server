@@ -1,30 +1,39 @@
 #!/bin/bash
 
-# Info: https://github.com/advplyr/audiobookshelf
-# https://www.audiobookshelf.org/
+# Info: https://jellyfin.org/docs/general/installation/container
 
-IMAGE="ghcr.io/advplyr/audiobookshelf"
-NAME="audiobookshelf"
-HOST_PORT="13378"
-PORT_MAP="${HOST_PORT}:80"
+##### Setup
+# sudo chown -R 1000:1000 ${JF_DATA_DIR}
+# sudo chmod +x bin/jellyfin.sh
+# getent group render | cut -d: -f3
+
+IMAGE="jellyfin/jellyfin:latest"
+NAME="jellyfin"
+SERVER_NAME="JellyfinServer"
+UID=$(id -u)
+GID=$(id -g)
 
 # Override variables in custom file or uncomment and use below ones.
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 ENV_FILE=".env"; source ${SCRIPT_DIR}/${ENV_FILE}
 # TIME_ZONE="America/Chicago"
-# ABS_DATA_DIR="/docker/appdata/audiobookshelf" # Configs
-# MEDIA_DIR="/media" # Mounts for content on NAS
+# MEDIA_DIR="/media" # Mounts for content on NAS (RO)
+# JF_DATA_DIR="/docker/appdata/jellyfin" # Configs for JellyFin
 
 function docker_start () {
     docker run -d \
-	    --name=${NAME} \
+	    --name ${NAME} \
+        --user ${UID}:${GID} \
+        --device /dev/dri/renderD128:/dev/dri/renderD128 \
+        --group-add 993 \
         --restart unless-stopped \
-        -p ${PORT_MAP} \
+        --network=host \
+        -h ${SERVER_NAME} \
         -e TZ="${TIME_ZONE}" \
-        -v ${MEDIA_DIR}/audiobooks:/audiobooks \
-        -v ${MEDIA_DIR}/podcasts:/podcasts \
-        -v ${ABS_DATA_DIR}/metadata:/metadata \
-        -v ${ABS_DATA_DIR}/config:/config \
+        -v ${MEDIA_DIR}/tv:/media/tv:ro \
+        -v ${MEDIA_DIR}/movies:/media/movies:ro \
+        -v ${JF_DATA_DIR}/config:/config \
+        -v ${JF_DATA_DIR}/cache:/cache \
         ${IMAGE}
 }
 

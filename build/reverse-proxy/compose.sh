@@ -42,7 +42,6 @@ function compose_copy () {
 
 function compose_init () {
     echo "### Requesting Let's Encrypt certificate for $DOMAINS ..."
-    # DOMAINS=(mydomain.tld *.mydomain.tld)
     domain_args=""
     for domain in "${DOMAINS[@]}"; do #Join $DOMAINS to -d args
         domain_args="$domain_args -d \"$domain\""
