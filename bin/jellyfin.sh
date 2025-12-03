@@ -10,8 +10,8 @@
 IMAGE="jellyfin/jellyfin:latest"
 NAME="jellyfin"
 SERVER_NAME="JellyfinServer"
-UID=$(id -u)
-GID=$(id -g)
+USER_ID=$(id -u)
+GROUP_ID=$(id -g)
 
 # Override variables in custom file or uncomment and use below ones.
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
@@ -23,7 +23,7 @@ ENV_FILE=".env"; source ${SCRIPT_DIR}/${ENV_FILE}
 function docker_start () {
     docker run -d \
 	    --name ${NAME} \
-        --user ${UID}:${GID} \
+        --user ${USER_ID}:${GROUP_ID} \
         --device /dev/dri/renderD128:/dev/dri/renderD128 \
         --group-add 993 \
         --restart unless-stopped \
