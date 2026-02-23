@@ -64,6 +64,7 @@ services:
       UP_UNIFI_DEFAULT_USER: "${UNIFI_POLLER_USER}"
       UP_UNIFI_DEFAULT_PASS: "${UNIFI_POLLER_PASS}"
       UP_UNIFI_DEFAULT_SAVE_DPI: "${UNIFI_POLLER_SAVE_DPI}"
+
   # chronograf:
   #   image: chronograf:alpine
   #   restart: "always"

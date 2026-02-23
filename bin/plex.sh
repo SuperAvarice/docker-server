@@ -6,8 +6,8 @@
 IMAGE="plexinc/pms-docker:latest"
 NAME="plex"
 SERVER_NAME="PlexServer"
-UID=$(id -u)
-GID=$(id -g)
+PLEX_UID=$(id -u)
+PLEX_GID=$(id -g)
 
 # Override variables in custom file or uncomment and use below ones.
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
@@ -29,8 +29,8 @@ function docker_start () {
         -e TZ="${TIME_ZONE}" \
         -e PLEX_CLAIM="${PLEX_CLAIM}" \
         -e ADVERTISE_IP="${PLEX_ADVERTISE_IP}" \
-        -e PLEX_UID="${UID}" \
-        -e PLEX_GID="${GID}" \
+        -e PLEX_UID="${PLEX_UID}" \
+        -e PLEX_GID="${PLEX_GID}" \
         -v ${MEDIA_DIR}/tv:/data/tv:ro \
         -v ${MEDIA_DIR}/movies:/data/movies:ro \
         -v ${MEDIA_DIR}/dvr:/data/dvr \
