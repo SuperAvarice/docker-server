@@ -65,14 +65,17 @@ services:
       UP_UNIFI_DEFAULT_PASS: "${UNIFI_POLLER_PASS}"
       UP_UNIFI_DEFAULT_SAVE_DPI: "${UNIFI_POLLER_SAVE_DPI}"
 
-  # chronograf:
-  #   image: chronograf:alpine
-  #   restart: "always"
-  #   depends_on:
-  #     - influxdb
-  #   environment:
-  #     INFLUXDB_URL: "http://influxdb:8086"
-  #   ports:
-  #     - "8888:8888"
-  #   volumes:
-  #     - ${DATA_DIR}/chronograf/data:/var/lib/chronograf
+#   chronograf:
+#     image: chronograf:latest
+#     restart: "always"
+#     depends_on:
+#       - influxdb
+#     environment:
+#       INFLUXDB_URL: "http://influxdb:8086"
+#     ports:
+#       - "8888:8888"
+#     volumes:
+#       - chronograf_data:/var/lib/chronograf
+
+# volumes:
+#   chronograf_data:
