@@ -9,11 +9,7 @@ HOST_PORT="5803"
 PORT_MAP="${HOST_PORT}:5800"
 DOCKER_FILE="./Dockerfile"
 
-if command -v podman >/dev/null 2>&1; then
-    BACKEND="podman"
-else
-    BACKEND="docker"
-fi
+if command -v podman >/dev/null 2>&1; then BACKEND="podman"; else BACKEND="docker"; fi
 
 # Override variables in custom file or uncomment and use below ones.
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
@@ -22,9 +18,9 @@ ENV_FILE=".env"; source ${SCRIPT_DIR}/${ENV_FILE}
 
 function _build () {
     ${BACKEND} pull ${BASE_IMAGE}
+    echo "FROM ${BASE_IMAGE}" > ${DOCKER_FILE}
     # Seed /run so buildah can place .containerenv (jlesage /run is a symlink to /tmp/run)
     mkdir -p run; : > run/.keep
-    echo "FROM ${BASE_IMAGE}" > ${DOCKER_FILE}
     echo "COPY run/ /run/" >> ${DOCKER_FILE}
     echo "RUN rm /run && mkdir /run" >> ${DOCKER_FILE}
     echo "RUN add-pkg locales && sed-patch 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && locale-gen" >> ${DOCKER_FILE}

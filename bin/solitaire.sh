@@ -2,5 +2,5 @@
 
 cwd=$(pwd)
 cd "/docker/build/solitaire"
-./docker.sh "$@"
+./tool.sh "$@"
 cd $cwd

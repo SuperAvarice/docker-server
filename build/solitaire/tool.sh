@@ -8,7 +8,8 @@ VOLUME="solitaire-data"
 HOST_PORT="5802"
 PORT_MAP="${HOST_PORT}:5800"
 DOCKER_FILE="./Dockerfile"
-BACKEND="docker"
+
+if command -v podman >/dev/null 2>&1; then BACKEND="podman"; else BACKEND="docker"; fi
 
 # Override variables in custom file or uncomment and use below ones.
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
@@ -18,6 +19,10 @@ ENV_FILE=".env"; source ${SCRIPT_DIR}/${ENV_FILE}
 function _build () {
     ${BACKEND} pull ${BASE_IMAGE}
     echo "FROM ${BASE_IMAGE}" > ${DOCKER_FILE}
+    # Seed /run so buildah can place .containerenv (jlesage /run is a symlink to /tmp/run)
+    mkdir -p run; : > run/.keep
+    echo "COPY run/ /run/" >> ${DOCKER_FILE}
+    echo "RUN rm /run && mkdir /run" >> ${DOCKER_FILE}
     echo "RUN add-pkg locales && sed-patch 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && locale-gen" >> ${DOCKER_FILE}
     echo "ENV LANG=en_US.UTF-8" >> ${DOCKER_FILE}
     echo "RUN add-pkg aisleriot gnome-cards-data" >> ${DOCKER_FILE}
@@ -28,8 +33,8 @@ function _build () {
     echo "RUN set-cont-env APP_NAME \"Solitaire\"" >> ${DOCKER_FILE}
     echo "RUN set-cont-env APP_VERSION \"1.0\"" >> ${DOCKER_FILE}
     ${BACKEND} build --tag=${IMAGE_NAME} -f ${DOCKER_FILE} .
-    rm -rf ${DOCKER_FILE}
-    ${BACKEND} volume create ${VOLUME}
+    rm -rf ${DOCKER_FILE} run
+    ${BACKEND} volume inspect ${VOLUME} >/dev/null 2>&1 || ${BACKEND} volume create ${VOLUME}
 }
 
 function _start () {
