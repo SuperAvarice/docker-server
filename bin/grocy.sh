@@ -17,6 +17,10 @@ ENV_FILE=".env"; source ${SCRIPT_DIR}/${ENV_FILE}
 # TIME_ZONE="America/Chicago"
 # GROCY_DATA_DIR="/docker/appdata/grocy" # Configs for Grocy
 
+function docker_init () {
+    docker cp ${NAME}:/app/www/config-dist.php ${GROCY_DATA_DIR}/data/config.php
+}
+
 function docker_start () {
     docker run -d \
 	    --name ${NAME} \
@@ -47,12 +51,13 @@ function docker_update () {
 }
 
 case "$1" in
+    init)   docker_init ;;
     start)  docker_start ;;
     stop)   docker_stop ;;
     clean)  docker_clean ;;
     update) docker_update ;;
     *)
         [ $# -eq 1 ] && echo "$0: Error: Invalid option: $1"
-        echo >&2 "Usage $0 <start, stop, clean, update>"
+        echo >&2 "Usage $0 <init, start, stop, clean, update>"
     ;;
 esac
