@@ -2,7 +2,7 @@
 
 PROJECT="reverse"
 COMPOSE_FILE="docker-compose.yml" # The default
-CERTBOT_OPTIONS="https://raw.githubusercontent.com/certbot/certbot/master/certbot-nginx/certbot_nginx/_internal/tls_configs"
+CERTBOT_OPTIONS="https://raw.githubusercontent.com/certbot/certbot/main/certbot/src/certbot/_internal/plugins/nginx/tls_configs"
 
 # Common vars for compose file and here
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
